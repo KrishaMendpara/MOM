@@ -1,0 +1,154 @@
+﻿@model MOM.Models.MeetingsModel
+<div class="pagetitle mb-4">
+    <h1 class="fw-bold">Schedule New Meeting</h1>
+    <p class="text-muted">Create and schedule a new organizational meeting</p>
+
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-controller="Meetings" asp-action="MeetingsAddEdit">Home</a>
+            </li>
+            <li class="breadcrumb-item active">Schedule New Meeting</li>
+        </ol>
+    </nav>
+</div>
+<!-- End Page Title -->
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="card shadow-lg border-0 rounded-4">
+
+                <!-- Card Header -->
+                <div class="card-header text-white rounded-top-4"
+                     style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <h5 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Schedule New Meeting
+                    </h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4">
+
+                    <form asp-action="Save" asp-controller="Meetings" method="post">
+                        <!-- Row 1 -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Meeting Type</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-tag"></i>
+                                    </span>
+                                    <select asp-for="MeetingTypeID" 
+                                            asp-items="ViewBag.MeetingTypeList" class="form-select">
+
+                                        <option value="" selected disabled>-- Select Meeting Type --</option>
+                                      
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Department</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-building"></i>
+                                    </span>
+                                    <select asp-for="DepartmentID" asp-items="ViewBag.DepartmentList" class="form-select">
+                                        <option value="" selected disabled>-- Select Department --</option>
+                                
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Venue</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </span>
+                                    <select asp-for="MeetingVenueID" asp-items="ViewBag.Venuelist" class="form-select">
+                                        <option value="" selected disabled>-- Select Venue --</option>
+                                        
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Meeting Date & Time</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                    <input type="datetime-local" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Meeting Description</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-chat-text"></i>
+                                </span>
+                                <textarea class="form-control" rows="3"
+                                          placeholder="Enter meeting description and agenda"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Meeting Document <small class="text-muted">(Optional)</small>
+                            </label>
+                            <input type="file" class="form-control">
+                            <small class="text-muted">
+                                Upload meeting agenda, minutes, or related documents
+                                (PDF, DOC, DOCX, TXT – Max 5MB)
+                            </small>
+                        </div>
+
+                        <!-- Guidelines Box -->
+                        <div class="alert alert-info rounded-3">
+                            <h6 class="fw-semibold mb-2">
+                                <i class="bi bi-info-circle me-1"></i> Meeting Guidelines
+                            </h6>
+                            <ul class="mb-0 small">
+                                <li>Ensure the selected venue is available</li>
+                                <li>Provide clear agenda and objectives</li>
+                                <li>Upload relevant documents for participants</li>
+                                <li>Consider participants’ availability</li>
+                            </ul>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-controller="Meetings" asp-action="MeetingsList"
+                               class="btn btn-outline-secondary">
+                                ← Back to Meetings
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary px-4"
+                                    style="background: linear-gradient(135deg, #667eea, #764ba2); border: none;">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Schedule Meeting
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+@section Scripts{
+<partial name="_ValidationScriptsPartial" />
+}

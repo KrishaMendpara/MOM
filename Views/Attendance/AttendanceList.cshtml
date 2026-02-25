@@ -1,0 +1,143 @@
+﻿<div class="pagetitle mb-4">
+    <h1 class="fw-bold">Attendance Report</h1>
+    <p class="text-muted">Generate and export attendance reports</p>
+
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active"></li>
+        </ol>
+    </nav>
+</div>
+<!-- End Page Title -->
+<div class="card border-0 shadow-lg rounded-4 mb-4">
+    <div class="card-header text-white rounded-top-4"
+         style="background: linear-gradient(135deg, #667eea, #764ba2);">
+        <h6 class="mb-0">
+            <i class="bi bi-funnel me-2"></i> Report Filters
+        </h6>
+    </div>
+
+    <div class="card-body p-4">
+        <div class="row align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Start Date</label>
+                <input type="date" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">End Date</label>
+                <input type="date" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <button class="btn w-100 text-white"
+                        style="background:#4f46e5;">
+                    <i class="bi bi-search me-1"></i> Generate Report
+                </button>
+            </div>
+
+            <div class="col-md-3">
+                <button class="btn btn-success w-100">
+                    <i class="bi bi-download me-1"></i> Export
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3">
+            <small class="text-primary fw-semibold">TOTAL RECORDS</small>
+            <h4 class="fw-bold mt-2">9</h4>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3">
+            <small class="text-success fw-semibold">PRESENT</small>
+            <h4 class="fw-bold mt-2">3</h4>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3">
+            <small class="text-warning fw-semibold">ATTENDANCE RATE</small>
+            <h4 class="fw-bold mt-2">33.3%</h4>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3">
+            <small class="text-info fw-semibold">UNIQUE MEETINGS</small>
+            <h4 class="fw-bold mt-2">3</h4>
+        </div>
+    </div>
+</div>
+<!-- End Report Filter Card -->
+<div class="card border-0 shadow-lg rounded-4">
+    <div class="card-header text-white d-flex justify-content-between rounded-top-4"
+         style="background: linear-gradient(135deg, #667eea, #764ba2);">
+        <h6 class="mb-0">
+            <i class="bi bi-table me-2"></i>
+            Attendance Data
+            @* <span class="badge bg-light text-dark ms-2">9 records</span> *@
+        </h6>
+        <a href="#" class="text-white text-decoration-none">
+            ← Back
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Meeting Date</th>
+                        <th>Meeting Type</th>
+                        <th>Meeting Venue</th>
+                        <th>Department</th>
+                        <th>Staff Name</th>
+                        <th>Staff Email</th>
+                        <th>Attendance</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-12-31 13:13</td>
+                        <td><span class="badge bg-info">Board Meeting</span></td>
+                        <td>Board Room</td>
+                        <td>Finance</td>
+                        <td>David Martinez</td>
+                        <td>david.m@company.com</td>
+                        <td><span class="badge bg-success">Present</span></td>
+                        <td>-</td>
+                    </tr>
+
+                    <tr>
+                        <td>2025-12-31 13:13</td>
+                        <td><span class="badge bg-info">Board Meeting</span></td>
+                        <td>Board Room</td>
+                        <td>Finance</td>
+                        <td>Jennifer Garcia</td>
+                        <td>jennifer.g@company.com</td>
+                        <td><span class="badge bg-danger">Absent</span></td>
+                        <td>-</td>
+                    </tr>
+
+                    <tr>
+                        <td>2025-11-27 10:45</td>
+                        <td><span class="badge bg-info">Brainstorming</span></td>
+                        <td>Training Room 2</td>
+                        <td>Marketing</td>
+                        <td>Lisa Taylor</td>
+                        <td>lisa.t@company.com</td>
+                        <td><span class="badge bg-danger">Absent</span></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+﻿@model MOM.Models.MeetingTypeModel
+<div class="pagetitle mb-4">
+    <h1 class="fw-bold">Add New Meeting Type</h1>
+    <p class="text-muted">Create a new meeting type</p>
+
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-controller="Meetings" asp-action="MeetingsAddEdit"></a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<!-- End Page Title -->
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+                <!-- Card Header -->
+                <div class="card-header text-white rounded-top-4"
+                     style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <h5 class="mb-0">
+                        <i class="bi bi-tag me-2"></i>
+                        Add New Meeting Type
+                    </h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4">
+
+                    <form method="post" asp-controller="MeetingType" asp-action="Save" >
+                        <input type="hidden" asp-for="MeetingTypeID" />
+                        <!-- Meeting Type -->
+                        <div class="mb-4">
+                            <label asp-for="MeetingTypeName" class="form-label fw-semibold">Meeting Type</label>
+
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-tag"></i>
+                                </span>
+                                <input asp-for="MeetingTypeName" type="text" class="form-control" placeholder="Enter meeting type name">
+                                <span class="input-group-text bg-white border-start-0 text-success">
+                                    <i class="bi bi-check-lg"></i>
+                                </span>
+                            </div>
+                            <span class="text-danger fw-bold" asp-validation-for="MeetingTypeName"></span><br />
+                            <small class="text-muted">
+                                e.g., Review Meeting, Planning Session, Training
+                            </small>
+                        </div>
+
+                        <!-- Remarks -->
+                        <div class="mb-4">
+                            <label asp-for="Remarks" class="form-label fw-semibold">Remarks</label>
+
+                            <div class="input-group">
+                                <span class="input-group-text bg-light align-items-start">
+                                    <i class="bi bi-chat-text"></i>
+                                </span>
+                                <textarea asp-for="Remarks" class="form-control" rows="4" placeholder="Enter any additional remarks or description"></textarea>
+                                <span class="input-group-text bg-white border-start-0 text-success align-items-start">
+                                    <i class="bi bi-check-lg"></i>
+                                </span>
+                            </div>
+                            <span class="text-danger fw-bold" asp-validation-for="Remarks"></span><br />
+                            <small class="text-muted">
+                                Optional: Add any additional context about this meeting type
+                            </small>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-controller="MeetingType" asp-action="MeetingTypeList"
+                               class="btn btn-outline-secondary">
+                                ← Back to List
+                            </a>
+
+                            <button type="submit"
+                                    class="btn px-4 text-white"
+                                    style="background: linear-gradient(135deg, #667eea, #764ba2); border:none;">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Create Meeting Type
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
