@@ -38,6 +38,10 @@
                            class="btn btn-primary">
                             <i class="bi bi-plus-lg"></i> Add MeetingType
                         </a>
+
+                        <a asp-controller="MeetingType" asp-action="ExportToExcel" class="btn btn-success">
+                            Export Meeting Type Data to Excel
+                        </a>
                     </div>
 
                     <form method="post" asp-action="MeetingTypeList" asp-controller="MeetingType" class="mb-3">

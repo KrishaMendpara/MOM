@@ -38,6 +38,10 @@
                            class="btn btn-primary">
                             <i class="bi bi-plus-lg"></i> Add Staff
                         </a>
+
+                        <a asp-controller="Staff" asp-action="ExportToExcel" class="btn btn-success">
+                            Export Staff Data to Excel
+                        </a>
                     </div>
                     <form method="post" asp-action="StaffList" asp-controller="Staff" class="mb-3">
                         <div class="row g-2 align-items-end">

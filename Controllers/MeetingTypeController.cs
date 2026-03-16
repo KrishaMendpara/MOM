@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using MOM.Models;
 using System.Data;
 using System.Reflection;
-
+using ClosedXML.Excel;
 namespace MOM.Controllers
 {
     public class MeetingTypeController : Controller
@@ -187,7 +187,6 @@ namespace MOM.Controllers
         }
         #endregion
 
-
         #region Search
 
         [HttpPost]
@@ -240,6 +239,72 @@ namespace MOM.Controllers
             return list;
         }
 
+        #endregion
+
+        #region ExportTOExcel
+        public IActionResult ExportToExcel()
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+
+                using (SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;"))
+                {
+                    con.Open();
+
+                    using (SqlCommand cmd = con.CreateCommand())
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "PR_MOM_MeetingType_SELECTALL";
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            dt.Load(dr);
+                        }
+                    }
+                }
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("MeetingType");
+
+                    // Header row
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        worksheet.Cell(1, i + 1).Value = dt.Columns[i].ColumnName;
+                        worksheet.Cell(1, i + 1).Style.Font.Bold = true;
+                    }
+
+                    // Data rows
+                    for (int row = 0; row < dt.Rows.Count; row++)
+                    {
+                        for (int col = 0; col < dt.Columns.Count; col++)
+                        {
+                            worksheet.Cell(row + 2, col + 1).Value = dt.Rows[row][col]?.ToString();
+                        }
+                    }
+
+                    worksheet.Columns().AdjustToContents();
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var content = stream.ToArray();
+
+                        return File(
+                            content,
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "MeetingType.xlsx"
+                        );
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error exporting data: " + ex.Message;
+                return RedirectToAction("MeetingTypeList");
+            }
+        }
         #endregion
     }
 }
