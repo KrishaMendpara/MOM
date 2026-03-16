@@ -32,6 +32,8 @@
                 <div class="card-body p-4">
 
                     <form asp-action="Save" asp-controller="Meetings" method="post">
+                        <input type="hidden" asp-for="MeetingID" />
+
                         <!-- Row 1 -->
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -84,7 +86,7 @@
                                     <span class="input-group-text bg-light">
                                         <i class="bi bi-calendar"></i>
                                     </span>
-                                    <input type="datetime-local" class="form-control">
+                                    <input asp-for="MeetingDate" type="datetime-local" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -96,8 +98,19 @@
                                 <span class="input-group-text bg-light">
                                     <i class="bi bi-chat-text"></i>
                                 </span>
-                                <textarea class="form-control" rows="3"
+                                <textarea asp-for="MeetingDescription" class="form-control" rows="3"
                                           placeholder="Enter meeting description and agenda"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">CancellationReason</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-chat-text"></i>
+                                </span>
+                                <textarea asp-for="CancellationReason" class="form-control" rows="3"
+                                          ></textarea>
                             </div>
                         </div>
 
@@ -106,8 +119,7 @@
                             <label class="form-label fw-semibold">
                                 Meeting Document <small class="text-muted">(Optional)</small>
                             </label>
-                            <input type="file" class="form-control">
-                            <small class="text-muted">
+                            <input asp-for="DocumentPath" type="file" class="form-control">                            <small class="text-muted">
                                 Upload meeting agenda, minutes, or related documents
                                 (PDF, DOC, DOCX, TXT – Max 5MB)
                             </small>

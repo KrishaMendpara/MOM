@@ -8,6 +8,7 @@ namespace MOM.Controllers
 {
     public class MeetingsController : Controller
     {
+        #region Meetings List
         public ActionResult<List<MeetingsModel>> MeetingsList()
         {
             List<MeetingsModel> list = new List<MeetingsModel>();
@@ -26,6 +27,7 @@ namespace MOM.Controllers
             while (reader.Read())
             {
                 MeetingsModel ms = new MeetingsModel();
+                ms.MeetingID = Convert.ToInt32(reader["MeetingID"]);
                 ms.MeetingTypeID = Convert.ToInt32(reader["MeetingTypeID"]);
                 ms.MeetingDate = Convert.ToDateTime(reader["MeetingDate"]);
                 ms.MeetingDescription = reader["MeetingDescription"].ToString();
@@ -42,6 +44,9 @@ namespace MOM.Controllers
 
           
         }
+        #endregion
+
+        #region Delete
         public IActionResult Delete(int id)
         {
             try
@@ -54,7 +59,7 @@ namespace MOM.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 SqlParameter p = new SqlParameter();
-                p.ParameterName = "@MeetingsID";
+                p.ParameterName = "@MeetingID";
                 p.SqlDbType = SqlDbType.Int;
                 p.Value = id;
 
@@ -62,7 +67,7 @@ namespace MOM.Controllers
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
-
+                TempData["Success"] = "Delete Successfully";
                 return RedirectToAction("MeetingsList");
             }
             catch (Exception)
@@ -71,13 +76,68 @@ namespace MOM.Controllers
                 return RedirectToAction("MeetingsList");
             }
         }
-        public IActionResult MeetingsAddEdit()
+        #endregion
+
+        #region Meetings Add Edit
+        [HttpGet]
+        public IActionResult MeetingsAddEdit(int? id)
         {
             ViewBag.DepartmentList = FillDepartmentDropDown();
             ViewBag.MeetingTypeList = FillMeetingTypeDropDown();
             ViewBag.Venuelist = FillMeetingVenueDropDown();
-            return View();
+
+            if (id > 0)
+            {
+                MeetingsModel meetings = GetMeetingsById(id.Value);
+                return View(meetings);
+            }
+            else
+            {
+                return View(new MeetingsModel());
+            }
         }
+        #endregion
+
+        #region Get Meetings By Id
+        public MeetingsModel GetMeetingsById(int id)
+        {
+            MeetingsModel meetings = new MeetingsModel();
+
+            SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;");
+
+            SqlCommand cmd = new SqlCommand("PR_MOM_Meetings_SELECTBYPK", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@MeetingID", id);
+
+            con.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                meetings.MeetingID = Convert.ToInt32(reader["MeetingID"]);
+                meetings.MeetingDate = Convert.ToDateTime(reader["MeetingDate"]);
+                meetings.MeetingDescription = reader["MeetingDescription"].ToString();
+                meetings.DocumentPath = reader["DocumentPath"].ToString();
+                meetings.IsCancelled = Convert.ToBoolean(reader["IsCancelled"]);
+                meetings.CancellationDateTime = reader["CancellationDateTime"] == DBNull.Value
+                ? (DateTime?)null : Convert.ToDateTime(reader["CancellationDateTime"]);
+
+                meetings.CancellationReason = reader["CancellationReason"].ToString();
+                meetings.MeetingVenueID = Convert.ToInt32(reader["MeetingVenueID"]);
+                meetings.MeetingTypeID = Convert.ToInt32(reader["MeetingTypeID"]);
+                meetings.DepartmentID = Convert.ToInt32(reader["DepartmentID"]);
+
+            }
+
+            reader.Close();
+            con.Close();
+
+            return meetings;
+        }
+        #endregion
+
+        #region Save
         public IActionResult Save(MeetingsModel model)
         {
             try
@@ -86,120 +146,126 @@ namespace MOM.Controllers
                 {
                     ViewBag.DepartmentList = FillDepartmentDropDown();
                     ViewBag.MeetingTypeList = FillMeetingTypeDropDown();
-                    ViewBag.MeetingVenueList = FillMeetingVenueDropDown();
+                    ViewBag.Venuelist = FillMeetingVenueDropDown();
                     return View("MeetingsAddEdit", model);
                 }
 
-
-                model.Created = DateTime.UtcNow;
-                model.Modified = DateTime.UtcNow;
-
-                SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;");
-
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = con;
-                if (model.MeetingsID == 0)
+                using (SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;"))
                 {
-                    cmd.CommandText = "PR_MOM_Meetings_Insert";
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = con;
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        if (model.MeetingID == 0)
+                        {
+                            cmd.CommandText = "PR_MOM_Meetings_Insert";
+                        }
+                        else
+                        {
+                            cmd.CommandText = "PR_MOM_Meetings_UpdateByPk";
+                            cmd.Parameters.AddWithValue("@MeetingID", model.MeetingID);
+                        }
+
+                        cmd.Parameters.AddWithValue("@MeetingDate", model.MeetingDate);
+                        cmd.Parameters.AddWithValue("@MeetingVenueID", model.MeetingVenueID);
+                        cmd.Parameters.AddWithValue("@MeetingTypeID", model.MeetingTypeID);
+                        cmd.Parameters.AddWithValue("@DepartmentID", model.DepartmentID);
+                        cmd.Parameters.AddWithValue("@MeetingDescription", model.MeetingDescription ?? "");
+                        cmd.Parameters.AddWithValue("@DocumentPath", model.DocumentPath ?? "");
+                        cmd.Parameters.AddWithValue("@IsCancelled", model.IsCancelled ?? false);
+                        cmd.Parameters.AddWithValue("@CancellationDateTime",
+                            model.CancellationDateTime == null ? DBNull.Value : model.CancellationDateTime);
+
+                        cmd.Parameters.AddWithValue("@CancellationReason", model.CancellationReason ?? "");
+
+                        con.Open();
+                        int noOfRows = cmd.ExecuteNonQuery();
+                        con.Close();
+
+                        if (noOfRows > 0)
+                        {
+                            TempData["Success"] = model.MeetingID == 0 ? "Record Inserted" : "Record Updated";
+                        }
+                    }
                 }
-                else
-                {
-                    cmd.CommandText = "PR_MOM_Meetings_UpdateByPk";
-                    cmd.Parameters.AddWithValue("@MeetingID", model.MeetingsID);
-                }
-
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                SqlParameter dattime = new SqlParameter();
-                dattime.ParameterName = "@MeetingDate";
-                dattime.SqlDbType = SqlDbType.DateTime;
-                dattime.Value = model.MeetingDate;
-
-                SqlParameter MVId = new SqlParameter();
-                MVId.ParameterName = "@MeetingVenueID";
-                MVId.SqlDbType = SqlDbType.Int;
-                MVId.Value = model.MeetingVenueID;
-
-                SqlParameter MTId = new SqlParameter();
-                MTId.ParameterName = "@MeetingTypeID";
-                MTId.SqlDbType = SqlDbType.Int;
-                MTId.Value = model.MeetingTypeID;
-
-                SqlParameter deptId = new SqlParameter();
-                deptId.ParameterName = "@DepartmentID";
-                deptId.SqlDbType = SqlDbType.Int;
-                deptId.Value = model.DepartmentID;
-
-                SqlParameter MTDes = new SqlParameter();
-                MTDes.ParameterName = "@MeetingDescription";
-                MTDes.SqlDbType = SqlDbType.NVarChar;
-                MTDes.Value = model.MeetingDescription;
-
-                SqlParameter DocPath = new SqlParameter();
-                DocPath.ParameterName = "@DocumentPath";
-                DocPath.SqlDbType = SqlDbType.NVarChar;
-                DocPath.Value = model.DocumentPath;
-
-                SqlParameter created = new SqlParameter();
-                created.ParameterName = "@Created";
-                created.SqlDbType = SqlDbType.DateTime;
-                created.Value = model.Created;
-
-                SqlParameter modified = new SqlParameter();
-                modified.ParameterName = "@Modified";
-                modified.SqlDbType = SqlDbType.DateTime;
-                modified.Value = model.Modified;
-
-                SqlParameter IsCancel = new SqlParameter();
-                IsCancel.ParameterName = "@IsCancelled";
-                IsCancel.SqlDbType = SqlDbType.Bit;
-                IsCancel.Value = model.IsCancelled;
-
-                SqlParameter CancelTime = new SqlParameter();
-                CancelTime.ParameterName = "@CancellationDateTime";
-                CancelTime.SqlDbType = SqlDbType.DateTime;
-                CancelTime.Value = model.CancellationDateTime;
-
-                SqlParameter CancelReason = new SqlParameter();
-                CancelReason.ParameterName = "@CancellationReason";
-                CancelReason.SqlDbType = SqlDbType.NVarChar;
-                CancelReason.Value = model.CancellationReason;
-
-                cmd.Parameters.Add(dattime);
-                cmd.Parameters.Add(MVId);
-                cmd.Parameters.Add(MTId);
-                cmd.Parameters.Add(deptId);
-                cmd.Parameters.Add(MTDes);
-                cmd.Parameters.Add(DocPath);
-                cmd.Parameters.Add(created);
-                cmd.Parameters.Add(modified);
-                cmd.Parameters.Add(IsCancel);
-                cmd.Parameters.Add(CancelTime);
-                cmd.Parameters.Add(CancelReason);
-
-                con.Open();
-
-                int noOfRows = cmd.ExecuteNonQuery();
-
-                if (noOfRows > 0)
-                {
-                    TempData["Success"] = "Record Inserted";
-                }
-                con.Close();
-
 
                 return RedirectToAction("MeetingsList");
-
             }
-
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("MeetingsList");
+            }
+        }
+        #endregion
 
+        #region Search
+
+        [HttpPost]
+        public IActionResult MeetingsList(IFormCollection formData)
+        {
+            string searchText = formData["SearchText"].ToString();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+                searchText = null;
+
+            ViewBag.SearchText = searchText;
+
+            List<MeetingsModel> list = GetMeetings(searchText);
+            return View(list);
+        }
+
+        private List<MeetingsModel> GetMeetings(string searchText)
+        {
+            List<MeetingsModel> list = new List<MeetingsModel>();
+
+            SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;");
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = "PR_MOM_Meetings_SELECTALL";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            if (searchText != null)
+                cmd.Parameters.AddWithValue("@SearchText", searchText);
+            else
+                cmd.Parameters.AddWithValue("@SearchText", DBNull.Value);
+
+            con.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                MeetingsModel meetings = new MeetingsModel();
+                meetings.MeetingID = Convert.ToInt32(reader["MeetingID"]);
+                meetings.MeetingDate = Convert.ToDateTime(reader["MeetingDate"]);
+                meetings.MeetingDescription = reader["MeetingDescription"].ToString();
+                meetings.DocumentPath = reader["DocumentPath"].ToString();
+                meetings.IsCancelled = reader["IsCancelled"] != DBNull.Value
+                       && Convert.ToBoolean(reader["IsCancelled"]);
+
+                meetings.CancellationDateTime = reader["CancellationDateTime"] != DBNull.Value
+                                                ? Convert.ToDateTime(reader["CancellationDateTime"])
+                                                : null;
+
+                meetings.CancellationReason = reader["CancellationReason"].ToString();
+
+
+                list.Add(meetings);
             }
 
+            reader.Close();
+            con.Close();
+
+            return list;
         }
+
+        #endregion
+
+
+        #region FillDepartmentDropDown
         public List<SelectListItem> FillDepartmentDropDown()
         {
             List<SelectListItem> list = new List<SelectListItem>();
@@ -224,7 +290,9 @@ namespace MOM.Controllers
             con.Close();
             return list;
         }
+        #endregion
 
+        #region FillMeetingTypeDropDown
         public List<SelectListItem> FillMeetingTypeDropDown()
         {
             List<SelectListItem> Typelist = new List<SelectListItem>();
@@ -249,7 +317,9 @@ namespace MOM.Controllers
             con.Close();
             return Typelist;
         }
+        #endregion
 
+        #region FillMeetingVenueDropDown
         public List<SelectListItem> FillMeetingVenueDropDown()
         {
             List<SelectListItem> Venuelist = new List<SelectListItem>();
@@ -274,6 +344,7 @@ namespace MOM.Controllers
             con.Close();
             return Venuelist;
         }
+        #endregion
 
     }
 }

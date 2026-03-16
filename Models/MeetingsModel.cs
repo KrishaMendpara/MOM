@@ -6,10 +6,9 @@ namespace MOM.Models
     {
         [Key]
         
-        public int MeetingsID { get; set; }
+        public int MeetingID { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}")]
         public DateTime MeetingDate{ get; set; }
 
         public int MeetingVenueID{ get;   set; }

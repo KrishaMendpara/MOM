@@ -198,6 +198,62 @@ namespace MOM.Controllers
         }
         #endregion
 
+        #region Search
+
+        [HttpPost]
+        public IActionResult StaffList(IFormCollection formData)
+        {
+            string searchText = formData["SearchText"].ToString();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+                searchText = null;
+
+            ViewBag.SearchText = searchText;
+
+            List<StaffModel> list = GetStaff(searchText);
+            return View(list);
+        }
+
+        private List<StaffModel> GetStaff(string searchText)
+        {
+            List<StaffModel> list = new List<StaffModel>();
+
+            SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;");
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = "PR_MOM_Staff_SELECTALL";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            if (searchText != null)
+                cmd.Parameters.AddWithValue("@SearchText", searchText);
+            else
+                cmd.Parameters.AddWithValue("@SearchText", DBNull.Value);
+
+            con.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                StaffModel s = new StaffModel();
+                s.StaffID = Convert.ToInt32(reader["StaffID"]);
+                s.StaffName = reader["StaffName"].ToString();
+                s.MobileNo = reader["MobileNo"].ToString();
+                s.EmailAddress = reader["EmailAddress"].ToString();
+                s.Remarks = reader["Remarks"].ToString();
+
+                list.Add(s);
+            }
+
+            reader.Close();
+            con.Close();
+
+            return list;
+        }
+
+        #endregion
+
         #region FillDepartmentDropDown
         public List<SelectListItem> FillDepartmentDropDown()
         {

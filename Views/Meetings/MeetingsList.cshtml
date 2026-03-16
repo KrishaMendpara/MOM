@@ -138,10 +138,27 @@
                             <i class="bi bi-plus-lg"></i> Add Meeting
                         </a>
                     </div>
+                    <form method="post" asp-action="MeetingsList" asp-controller="Meetings" class="mb-3">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label for="SearchText" class="form-label">Search by Meeting Description</label>
+                                <input type="text" name="SearchText" id="SearchText" class="form-control"
+                                       placeholder="Enter Meeting Description" value="@ViewBag.SearchText" />
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                                <a asp-controller="Meetings" asp-action="MeetingsList" class="btn btn-secondary ms-2">
+                                    <i class="fas fa-undo"></i> Reset
+                                </a>
+                            </div>
+                        </div>
+                    </form>
 
                      @if (Model != null && Model.Count > 0)
                     {
-                        <table class="table datatable">
+                        <table class="table ">
                             <thead>
                                 <tr>
 
@@ -171,7 +188,7 @@
                                         <td class="d-flex gap-2 align-items-center">
 
                                             <!-- Edit Button -->
-                                            <a asp-controller="Meetings" asp-action="MeetingsAddEdit" asp-route-id="@meetings.MeetingsID"
+                                            <a asp-controller="Meetings" asp-action="MeetingsAddEdit" asp-route-id="@meetings.MeetingID"
                                                title="Edit"
                                                style="
                                                        width:36px;
@@ -188,7 +205,7 @@
                                             </a>
 
                                             <!-- Delete Button -->
-                                            <a asp-controller="Meetings" asp-action="Delete" asp-route-id="@meetings.MeetingsID"
+                                            <a asp-controller="Meetings" asp-action="Delete" asp-route-id="@meetings.MeetingID"
                                                title="Delete"
                                                style="
                                                        width:36px;

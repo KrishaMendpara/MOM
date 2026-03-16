@@ -112,8 +112,8 @@ namespace MOM.Controllers
                 {
                     cmd.CommandText = "PR_MOM_Department_INSERT";
                     cmd.Parameters.AddWithValue("DepartmentName", model.DepartmentName);
-                    cmd.Parameters.AddWithValue("@Created", DateTime.Now);
-                    cmd.Parameters.AddWithValue("@Modified", DateTime.Now);
+                    //cmd.Parameters.AddWithValue("@Created", DateTime.Now);
+                    //cmd.Parameters.AddWithValue("@Modified", DateTime.Now);
                 }
                 else
                 {
@@ -121,7 +121,7 @@ namespace MOM.Controllers
                     cmd.Parameters.AddWithValue("DepartmentID", model.DepartmentID);
                     cmd.Parameters.AddWithValue("DepartmentName", model.DepartmentName);
                   
-                    cmd.Parameters.AddWithValue("@Modified", DateTime.Now);
+                    //cmd.Parameters.AddWithValue("@Modified", DateTime.Now);
                 }
                
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -130,7 +130,7 @@ namespace MOM.Controllers
 
                 con.Open();
                 int noOfRows = cmd.ExecuteNonQuery();
-                con.Close();
+                //con.Close();
 
                 if (noOfRows > 0)
                 {
@@ -185,6 +185,58 @@ namespace MOM.Controllers
                 return RedirectToAction("Index");
             }
         }
+        #endregion
+
+        #region Search
+
+        [HttpPost]
+        public IActionResult Index(IFormCollection formData)
+        {
+            string searchText = formData["SearchText"].ToString();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+                searchText = null;
+
+            ViewBag.SearchText = searchText;
+
+            List<DepartmentModel> list = GetDepartments(searchText);
+            return View("DepartmentList", list);
+        }
+
+        private List<DepartmentModel> GetDepartments(string searchText)
+        {
+            List<DepartmentModel> list = new List<DepartmentModel>();
+
+            SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;");
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = "PR_MOM_Department_SELECTALL";
+            cmd.CommandType = CommandType.StoredProcedure;
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                cmd.Parameters.AddWithValue("@SearchText", searchText);
+            }
+
+            con.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                DepartmentModel d = new DepartmentModel();
+                d.DepartmentID = Convert.ToInt32(reader["DepartmentID"]);
+                d.DepartmentName = reader["DepartmentName"].ToString();
+
+                list.Add(d);
+            }
+
+            reader.Close();
+            con.Close();
+
+            return list;
+        }
+
         #endregion
     }
 }

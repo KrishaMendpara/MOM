@@ -186,5 +186,60 @@ namespace MOM.Controllers
             return meetingTypeModel;
         }
         #endregion
+
+
+        #region Search
+
+        [HttpPost]
+        public IActionResult MeetingTypeList(IFormCollection formData)
+        {
+            string searchText = formData["SearchText"].ToString();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+                searchText = null;
+
+            ViewBag.SearchText = searchText;
+
+            List<MeetingTypeModel> list = GetMeetingType(searchText);
+            return View(list);
+        }
+
+        private List<MeetingTypeModel> GetMeetingType(string searchText)
+        {
+            List<MeetingTypeModel> list = new List<MeetingTypeModel>();
+
+            SqlConnection con = new SqlConnection("Server=DESKTOP-HUDL387\\SQLEXPRESS;Database=DOTNET;Trusted_Connection=True;TrustServerCertificate=True;");
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = "PR_MOM_MeetingType_SELECTALL";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            if (searchText != null)
+                cmd.Parameters.AddWithValue("@SearchText", searchText);
+            else
+                cmd.Parameters.AddWithValue("@SearchText", DBNull.Value);
+
+            con.Open();
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                MeetingTypeModel m = new MeetingTypeModel();
+                m.MeetingTypeID = Convert.ToInt32(reader["MeetingTypeID"]);
+                m.MeetingTypeName = reader["MeetingTypeName"].ToString();
+                m.Remarks = reader["Remarks"].ToString();
+
+                list.Add(m);
+            }
+
+            reader.Close();
+            con.Close();
+
+            return list;
+        }
+
+        #endregion
     }
 }
